@@ -292,7 +292,9 @@ export function useSitemapGeneration(token: string, options?: {
 
     try {
       const client = new BuilderAPIClient(token)
-      const response = await client.generateSitemap(request, { projectId })
+      const response = projectId 
+        ? await client.generateSitemap(request, { projectId })
+        : await client.generateSitemap(request)
 
       if (response.success && response.data) {
         setData(response.data)
@@ -333,7 +335,9 @@ export function useWireframeGeneration(token: string, options?: {
 
     try {
       const client = new BuilderAPIClient(token)
-      const response = await client.generateWireframe(request, { projectId })
+      const response = projectId 
+        ? await client.generateWireframe(request, { projectId })
+        : await client.generateWireframe(request)
 
       if (response.success && response.data) {
         setData(response.data)
@@ -374,7 +378,9 @@ export function useStyleGuideGeneration(token: string, options?: {
 
     try {
       const client = new BuilderAPIClient(token)
-      const response = await client.generateStyleGuide(request, { projectId })
+      const response = projectId 
+        ? await client.generateStyleGuide(request, { projectId })
+        : await client.generateStyleGuide(request)
 
       if (response.success && response.data) {
         setData(response.data)
@@ -425,8 +431,21 @@ export function useProjects(token: string, options?: {
       const response = await client.getProjects(params)
 
       if (response.success && response.data) {
-        setProjects(response.data.projects)
-        options?.onSuccess?.(response.data)
+        // Transform ProjectResponse[] to ProjectWithStats[] by adding default stats
+        const projectsWithStats = response.data.projects.map(project => ({
+          ...project,
+          stats: {
+            sitemapCount: 0,
+            wireframeCount: 0,
+            styleGuideCount: 0,
+            aiGenerationCount: 0,
+            lastActivity: project.updated_at,
+            totalCost: 0,
+            status: 'active'
+          }
+        }))
+        setProjects(projectsWithStats)
+        options?.onSuccess?.({ ...response.data, projects: projectsWithStats })
       } else if (response.error) {
         setError(response.error)
         options?.onError?.(response.error)
@@ -574,16 +593,7 @@ export function getErrorMessage<T>(response: ApiResponse<T>): string | null {
 // Export everything
 // =============================================================================
 
-export {
-  BuilderAPIClient,
-  useSitemapGeneration,
-  useWireframeGeneration,
-  useStyleGuideGeneration,
-  useProjects,
-  createBuilderClient,
-  isSuccessful,
-  hasError,
-  getErrorMessage
-}
+// All functions are exported directly above
+// No need for additional exports
 
-export default BuilderAPIClient
+export default createBuilderClient

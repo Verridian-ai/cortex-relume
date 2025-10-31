@@ -94,11 +94,11 @@ export async function POST(request: NextRequest) {
     // Generate sitemap using the existing AI generator
     const sitemapResult = await sitemapGenerator.generateSitemap({
       prompt,
-      websiteType,
-      domain,
-      requirements,
-      options,
-      preferences,
+      ...(websiteType ? { websiteType } : {}),
+      ...(domain ? { domain } : {}),
+      ...(requirements ? { requirements } : {}),
+      ...(options ? { options: Object.fromEntries(Object.entries(options).filter(([_, v]) => v !== undefined)) } : {}),
+      ...(preferences ? { preferences: Object.fromEntries(Object.entries(preferences).filter(([_, v]) => v !== undefined)) } : {}),
     })
     
     const processingTime = Date.now() - startTime
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
       logApiError(error, {
         route: '/api/builder/sitemap',
         method: 'POST',
-        userId: user?.id,
+        ...(user?.id ? { userId: user.id } : {}),
         requestId,
       })
     } catch {

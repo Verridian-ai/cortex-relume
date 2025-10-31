@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
       logApiError(error, {
         route: '/api/builder/wireframe',
         method: 'POST',
-        userId: user?.id,
+        ...(user?.id ? { userId: user.id } : {}),
         requestId,
       })
     } catch {

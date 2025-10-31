@@ -18,7 +18,7 @@ import {
   checkUserQuotas,
   extractProjectId,
 } from '@/lib/api/builder'
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 
 /**
  * Rate limit identifier for this route
@@ -61,7 +61,6 @@ export async function GET(
     const user = await verifyAuth(request)
     
     // Fetch project with all related data
-    const supabase = createClient()
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .select(`
@@ -132,12 +131,14 @@ export async function GET(
     // Log the error
     try {
       const user = await verifyAuth(request).catch(() => null)
-      logApiError(error, {
+      const logContext = {
         route: `/api/builder/project/[${projectId}]`,
         method: 'GET',
-        userId: user?.id,
         requestId,
-      })
+        ...(user?.id ? { userId: user.id } : {})
+      }
+      
+      logApiError(error, logContext)
     } catch {
       // Ignore auth errors for logging
     }
@@ -199,7 +200,6 @@ export async function PUT(
     const user = await verifyAuth(request)
     
     // Check if project exists and user owns it
-    const supabase = createClient()
     const { data: existingProject, error: fetchError } = await supabase
       .from('projects')
       .select('user_id')
@@ -297,7 +297,7 @@ export async function PUT(
       logApiError(error, {
         route: `/api/builder/project/[${projectId}]`,
         method: 'PUT',
-        userId: user?.id,
+        ...(user?.id ? { userId: user.id } : {}),
         requestId,
       })
     } catch {
@@ -361,7 +361,6 @@ export async function DELETE(
     const user = await verifyAuth(request)
     
     // Check if project exists and user owns it
-    const supabase = createClient()
     const { data: existingProject, error: fetchError } = await supabase
       .from('projects')
       .select('user_id, name')
@@ -445,7 +444,7 @@ export async function DELETE(
       logApiError(error, {
         route: `/api/builder/project/[${projectId}]`,
         method: 'DELETE',
-        userId: user?.id,
+        ...(user?.id ? { userId: user.id } : {}),
         requestId,
       })
     } catch {

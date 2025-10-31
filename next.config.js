@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  trailingSlash: true,
+  experimental: {
+    serverComponentsExternalPackages: ['@supabase/supabase-js'],
+  },
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -19,6 +19,12 @@ const nextConfig = {
       },
     ],
   },
+  // Enable React strict mode
+  reactStrictMode: true,
+  // Optimize for production
+  poweredByHeader: false,
+  // Enable compression
+  compress: true,
 };
 
 module.exports = nextConfig;

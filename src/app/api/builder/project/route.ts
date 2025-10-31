@@ -1,3 +1,4 @@
+import { supabase } from '@/lib/supabase/client'
 /**
  * API Route: /api/builder/project
  * Handles project creation (POST) and listing (GET)
@@ -85,7 +86,6 @@ export async function POST(request: NextRequest) {
     const { name, description, type, isPublic, settings } = validation.data
     
     // Create project in database
-    const supabase = createClient()
     const { data: project, error: projectError } = await supabase
       .from('projects')
       .insert({
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
       logApiError(error, {
         route: '/api/builder/project',
         method: 'POST',
-        userId: user?.id,
+        ...(user?.id ? { userId: user.id } : {}),
         requestId,
       })
     } catch {
@@ -210,7 +210,6 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'desc'
     
     // Build query
-    const supabase = createClient()
     let query = supabase
       .from('projects')
       .select(`
@@ -277,7 +276,7 @@ export async function GET(request: NextRequest) {
       logApiError(error, {
         route: '/api/builder/project',
         method: 'GET',
-        userId: user?.id,
+        ...(user?.id ? { userId: user.id } : {}),
         requestId,
       })
     } catch {

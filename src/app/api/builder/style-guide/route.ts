@@ -110,11 +110,20 @@ export async function POST(request: NextRequest) {
     // Generate style guide using the AI generator
     const styleResult = await styleGenerator.generateStyleGuide({
       wireframeData,
-      brandGuidelines,
-      designStyle,
-      wireframeDescription,
-      existingColors,
-      preferences,
+      brandGuidelines: {
+        name: brandGuidelines.name,
+        industry: brandGuidelines.industry,
+        targetAudience: brandGuidelines.targetAudience,
+        brandPersonality: brandGuidelines.brandPersonality,
+        brandValues: brandGuidelines.brandValues,
+        ...(brandGuidelines.colorPreferences ? { colorPreferences: brandGuidelines.colorPreferences } : {}),
+        ...(brandGuidelines.colorAvoid ? { colorAvoid: brandGuidelines.colorAvoid } : {}),
+        ...(brandGuidelines.typographyPreference ? { typographyPreference: brandGuidelines.typographyPreference } : {}),
+      },
+      designStyle: designStyle as any,
+      ...(wireframeDescription ? { wireframeDescription } : {}),
+      ...(existingColors ? { existingColors } : {}),
+      ...(preferences ? { preferences: Object.fromEntries(Object.entries(preferences).filter(([_, v]) => v !== undefined)) } : {}),
     })
     
     const processingTime = Date.now() - startTime
@@ -172,7 +181,7 @@ export async function POST(request: NextRequest) {
       logApiError(error, {
         route: '/api/builder/style-guide',
         method: 'POST',
-        userId: user?.id,
+        ...(user?.id ? { userId: user.id } : {}),
         requestId,
       })
     } catch {
