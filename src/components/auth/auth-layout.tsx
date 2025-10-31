@@ -236,13 +236,13 @@ export function VerificationLayout({
   const titles = {
     email: 'Verify your email',
     phone: 'Verify your phone',
-    2fa: 'Two-factor authentication'
+    '2fa': 'Two-factor authentication'
   }
 
   const descriptions = {
     email: 'We\'ve sent a verification link to your email address',
     phone: 'We\'ve sent a verification code to your phone',
-    2fa: 'Enter your authentication code to continue'
+    '2fa': 'Enter your authentication code to continue'
   }
 
   return (

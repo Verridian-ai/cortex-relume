@@ -321,7 +321,7 @@ function processUsageRanges(components: any[]) {
   const ranges = percentiles.map((percentile, index) => {
     const threshold = usageCounts[Math.floor((percentile / 100) * usageCounts.length)]
     const nextThreshold = index < percentiles.length - 1 
-      ? usageCounts[Math.floor(((percentiles[index + 1]) / 100) * usageCounts.length)]
+      ? usageCounts[Math.floor(((percentiles[index + 1] ?? 0) / 100) * usageCounts.length)]
       : 0
 
     return {

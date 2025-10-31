@@ -39,7 +39,8 @@ import {
   Grid3X3,
   List,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  X
 } from 'lucide-react';
 
 interface QuickActionsProps {

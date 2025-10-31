@@ -23,7 +23,8 @@ import {
   Loader2,
   Download,
   Folder,
-  Calendar
+  Calendar,
+  FileText
 } from 'lucide-react';
 import { bulkExport, formatFileSize } from '@/lib/projects/export';
 

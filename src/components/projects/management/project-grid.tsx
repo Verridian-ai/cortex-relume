@@ -379,6 +379,5 @@ export function ProjectGrid({
         />
       )}
       </div>
-    </>
   );
 }
