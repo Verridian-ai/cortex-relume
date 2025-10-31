@@ -1,0 +1,28 @@
+# Cron Jobs Configuration for Automated Backup System
+
+# This file contains cron job configurations for automated backup processing
+# Add these to your deployment platform (Vercel, Netlify, etc.) or system crontab
+
+# Backup Processor - Runs every hour to process due schedules
+# This processes all scheduled backups that are due
+0 * * * * curl -X GET "https://your-supabase-project.functions.supabase.co/backup-processor?action=process" -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY"
+
+# Backup Maintenance - Runs daily at 2 AM UTC
+# This performs cleanup, retention enforcement, and health checks
+0 2 * * * curl -X GET "https://your-supabase-project.functions.supabase.co/backup-maintenance?action=full" -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY"
+
+# Storage Cleanup - Runs daily at 3 AM UTC
+# This cleans up orphaned files and performs storage maintenance
+0 3 * * * curl -X GET "https://your-supabase-project.functions.supabase.co/backup-maintenance?action=cleanup" -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY"
+
+# Health Check - Runs every 6 hours
+# This checks backup health and generates alerts
+0 */6 * * * curl -X GET "https://your-supabase-project.functions.supabase.co/backup-maintenance?action=health" -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY"
+
+# Retention Enforcement - Runs weekly on Sunday at 1 AM UTC
+# This enforces retention policies across all backups
+0 1 * * 0 curl -X GET "https://your-supabase-project.functions.supabase.co/backup-maintenance?action=retention" -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY"
+
+# Database Compaction - Runs monthly on the 1st at 4 AM UTC
+# This performs database maintenance and optimization
+0 4 1 * * curl -X GET "https://your-supabase-project.functions.supabase.co/backup-maintenance?action=compact" -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY"

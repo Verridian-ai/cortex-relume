@@ -107,7 +107,7 @@ export function Nav({ isAppLayout = false }: NavProps) {
     },
     {
       name: 'Projects',
-      href: '/app/projects',
+      href: '/projects',
       icon: Layout,
       public: false
     },
