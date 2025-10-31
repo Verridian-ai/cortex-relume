@@ -28,6 +28,7 @@ import {
 import { ProjectDetail } from './project-detail';
 import { QuickActions } from './quick-actions';
 import { ProjectStats } from './project-stats';
+import { ProjectErrorBoundary } from './error-boundary';
 import { BulkActions } from './bulk-actions';
 import { ProjectCard } from './project-card';
 import { ProjectList } from './project-list';
@@ -271,8 +272,7 @@ export function ProjectGrid({
   const shouldUseVirtualization = sortedProjects.length > 20;
 
   return (
-    <ProjectErrorBoundary feature="project-grid">
-      <div className={cn("space-y-4", className)}>
+    <div className={cn("space-y-4", className)}>
         {/* Column Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -378,6 +378,7 @@ export function ProjectGrid({
           onClose={() => setShowBulkActions(false)}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }

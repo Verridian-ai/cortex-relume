@@ -1,0 +1,175 @@
+{
+  "name": "cortex-relume",
+  "version": "1.0.0",
+  "description": "AI-powered website design accelerator built with React, Next.js, Supabase, and OpenAI GPT-5",
+  "keywords": [
+    "ai",
+    "website-builder",
+    "design",
+    "react",
+    "nextjs",
+    "supabase",
+    "gpt-5",
+    "wireframe",
+    "sitemap",
+    "components"
+  ],
+  "author": "Cortex Relume Team",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:reset": "supabase db reset",
+    "supabase:generate-types": "supabase gen types typescript --local > src/types/database.types.ts",
+    "db:migrate": "supabase db push",
+    "db:studio": "supabase studio",
+    "postinstall": "supabase generate types --local > src/types/database.types.ts"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "@types/node": "^20.12.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.4.0",
+    
+    "@supabase/supabase-js": "^2.42.0",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    
+    "openai": "^4.28.0",
+    "@ai-sdk/openai": "^0.0.10",
+    "ai": "^3.2.25",
+    
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-separator": "^1.0.3",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-tooltip": "^1.0.7",
+    "@radix-ui/react-progress": "^1.0.3",
+    "@radix-ui/react-switch": "^1.0.3",
+    
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.2",
+    "lucide-react": "^0.378.0",
+    
+    "framer-motion": "^11.0.0",
+    "react-hook-form": "^7.51.0",
+    "@hookform/resolvers": "^3.3.4",
+    "zod": "^3.22.4",
+    "react-hot-toast": "^2.4.1",
+    "sonner": "^1.4.0",
+    
+    "@tanstack/react-query": "^5.29.0",
+    "@tanstack/react-table": "^8.16.0",
+    "react-window": "^1.8.9",
+    "react-virtualized-auto-sizer": "^1.0.7",
+    
+    "date-fns": "^3.6.0",
+    "react-day-picker": "^8.10.1",
+    "react-calendar": "^4.8.0",
+    
+    "recharts": "^2.12.0",
+    "chart.js": "^4.4.1",
+    "react-chartjs-2": "^5.2.0",
+    
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    
+    "sharp": "^0.33.3",
+    "mime-types": "^2.1.35",
+    
+    "lodash": "^4.17.21",
+    "@types/lodash": "^4.17.0",
+    
+    "js-cookie": "^3.0.5",
+    "@types/js-cookie": "^3.0.6",
+    
+    "react-share": "^5.1.0",
+    "react-helmet-async": "^2.0.5",
+    
+    "uuid": "^9.0.1",
+    "@types/uuid": "^9.0.7",
+    
+    "react-syntax-highlighter": "^15.5.0",
+    "@types/react-syntax-highlighter": "^15.5.11",
+    
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "@testing-library/react": "^14.3.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "jest-css-modules": "^2.1.0",
+    
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.0",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    
+    "supabase": "^1.136.0",
+    "@supabase/cli": "^1.143.0",
+    
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.13",
+    "pre-commit": "^3.5.0",
+    
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.2",
+    "husky": "^9.0.11",
+    
+    "socket.io-client": "^4.7.4",
+    "@types/socket.io-client": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cortex-relume.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/cortex-relume/issues"
+  },
+  "homepage": "https://github.com/yourusername/cortex-relume#readme",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  }
+}

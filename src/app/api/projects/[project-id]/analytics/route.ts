@@ -17,7 +17,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const projectId = params.projectId;
+    const projectId = params.project-id;
     const { searchParams } = new URL(request.url);
     const days = parseInt(searchParams.get('days') || '30');
     const summary = searchParams.get('summary') === 'true';
@@ -26,7 +26,7 @@ export async function GET(
     const { data: project } = await supabase
       .from('projects')
       .select('user_id')
-      .eq('id', projectId)
+      .eq('id', project-id)
       .single();
 
     if (!project) {
@@ -35,7 +35,7 @@ export async function GET(
 
     const canView = project.user_id === user.id ||
       await supabase.rpc('check_project_permission', {
-        project_uuid: projectId,
+        project_uuid: project-id,
         user_uuid: user.id,
         required_permission: 'viewer'
       });
@@ -48,7 +48,7 @@ export async function GET(
       // Get analytics summary
       const { data: summaryData, error: summaryError } = await supabase
         .rpc('get_project_analytics_summary', {
-          project_uuid: projectId,
+          project_uuid: project-id,
           days_back: days
         });
 
@@ -66,7 +66,7 @@ export async function GET(
         *,
         user:profiles(id, full_name, avatar_url)
       `)
-      .eq('project_id', projectId)
+      .eq('project_id', project-id)
       .gte('created_at', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString())
       .order('created_at', { ascending: false })
       .limit(1000);
@@ -79,7 +79,7 @@ export async function GET(
     const { data: usageStats, error: statsError } = await supabase
       .from('project_usage_stats')
       .select('*')
-      .eq('project_id', projectId)
+      .eq('project_id', project-id)
       .gte('date', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
       .order('date', { ascending: false });
 
@@ -121,7 +121,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const projectId = params.projectId;
+    const projectId = params.project-id;
     const body = await request.json();
 
     // Validate required fields
@@ -133,7 +133,7 @@ export async function POST(
 
     // Check if user has access to this project
     const canAccess = await supabase.rpc('can_access_project', {
-      project_uuid: projectId,
+      project_uuid: project-id,
       user_uuid: user.id
     });
 
@@ -143,7 +143,7 @@ export async function POST(
 
     // Create analytics record
     const analyticsData = {
-      project_id: projectId,
+      project_id: project-id,
       user_id: user.id,
       session_id: body.session_id,
       event_type: body.event_type,
