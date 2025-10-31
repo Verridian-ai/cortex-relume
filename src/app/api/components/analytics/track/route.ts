@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     // Verify component exists
     const { data: component, error: componentError } = await supabase
       .from('components')
-      .select('id, name, is_public')
+      .select('id, name, is_public, author_id')
       .eq('id', validatedData.component_id)
       .single()
 
@@ -136,7 +136,7 @@ async function processUsageTracking(params: {
     const { supabase, componentId, action, userId, metadata } = params
 
     // Update daily usage statistics
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toISOString().split('T')[0] || new Date().toLocaleDateString('en-CA')
     
     // Get or create today's usage stats
     const { data: existingStats } = await supabase
@@ -302,9 +302,9 @@ async function updateTrendingScore(supabase: any, componentId: string, date: str
     }
 
     // Calculate trending metrics
-    const totalRecentUses = recentStats.reduce((sum, stat) => sum + (stat.total_uses || 0), 0)
-    const totalRecentUsers = recentStats.reduce((sum, stat) => sum + (stat.unique_users || 0), 0)
-    const totalRecentImports = recentStats.reduce((sum, stat) => sum + (stat.successful_imports || 0), 0)
+    const totalRecentUses = recentStats.reduce((sum: number, stat: any) => sum + (stat.total_uses || 0), 0)
+    const totalRecentUsers = recentStats.reduce((sum: number, stat: any) => sum + (stat.unique_users || 0), 0)
+    const totalRecentImports = recentStats.reduce((sum: number, stat: any) => sum + (stat.successful_imports || 0), 0)
 
     // Calculate trending score (0-100 scale)
     const usageScore = Math.min(50, totalRecentUses * 0.1) // Max 50 points for usage
@@ -373,8 +373,8 @@ export async function GET(request: NextRequest) {
         usageStats?.flatMap(stat => stat.unique_users || []) || []
       ).size,
       total_imports: usageStats?.reduce((sum, stat) => sum + (stat.successful_imports || 0), 0) || 0,
-      daily_average: usageStats?.length > 0 
-        ? (usageStats?.reduce((sum, stat) => sum + (stat.total_uses || 0), 0) || 0) / days
+      daily_average: (usageStats && usageStats.length > 0) 
+        ? (usageStats?.reduce((sum: number, stat: any) => sum + (stat.total_uses || 0), 0) || 0) / days
         : 0,
       trending_score: usageStats?.[0]?.trending_score || 0,
     }

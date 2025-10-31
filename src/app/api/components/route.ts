@@ -45,25 +45,48 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     
     // Parse and validate search parameters
+    const categories = searchParams.get('categories')?.split(',').filter(Boolean)
+    const frameworks = searchParams.get('frameworks')?.split(',').filter(Boolean)
+    const tags = searchParams.get('tags')?.split(',').filter(Boolean)
+    const difficulty_levels = searchParams.get('difficulty_levels')?.split(',').filter(Boolean)
+    
+    const query = searchParams.get('query') || undefined
+    const rating_min = searchParams.get('rating_min') ? Number(searchParams.get('rating_min')) : undefined
+    const usage_min = searchParams.get('usage_min') ? Number(searchParams.get('usage_min')) : undefined
+    
     const filters: ComponentSearchFilters = {
-      query: searchParams.get('query') || undefined,
-      categories: searchParams.get('categories')?.split(',') || undefined,
-      frameworks: searchParams.get('frameworks')?.split(',') || undefined,
-      tags: searchParams.get('tags')?.split(',') || undefined,
-      difficulty_levels: searchParams.get('difficulty_levels')?.split(',') || undefined,
-      rating_min: searchParams.get('rating_min') ? Number(searchParams.get('rating_min')) : undefined,
-      usage_min: searchParams.get('usage_min') ? Number(searchParams.get('usage_min')) : undefined,
+      ...(query ? { query } : {}),
+      ...(categories ? { categories } : {}),
+      ...(frameworks ? { frameworks: frameworks as any } : {}),
+      ...(tags ? { tags } : {}),
+      ...(difficulty_levels ? { difficulty_levels: difficulty_levels as any } : {}),
+      ...(rating_min !== undefined ? { rating_min } : {}),
+      ...(usage_min !== undefined ? { usage_min } : {}),
       sort_by: (searchParams.get('sort_by') as any) || 'popularity',
       sort_order: (searchParams.get('sort_order') as any) || 'desc',
       limit: searchParams.get('limit') ? Number(searchParams.get('limit')) : 50,
       offset: searchParams.get('offset') ? Number(searchParams.get('offset')) : 0,
     }
 
-    // Validate filters
+    // Validate filters and create clean object
     const validatedFilters = searchComponentsSchema.parse(filters)
+    
+    // Create a clean filters object with only defined values
+    const searchFilters: Partial<ComponentSearchFilters> = {}
+    if (validatedFilters.query) searchFilters.query = validatedFilters.query
+    if (validatedFilters.categories?.length) searchFilters.categories = validatedFilters.categories
+    if (validatedFilters.frameworks?.length) searchFilters.frameworks = validatedFilters.frameworks as any
+    if (validatedFilters.tags?.length) searchFilters.tags = validatedFilters.tags
+    if (validatedFilters.difficulty_levels?.length) searchFilters.difficulty_levels = validatedFilters.difficulty_levels as any
+    if (validatedFilters.rating_min !== undefined) searchFilters.rating_min = validatedFilters.rating_min
+    if (validatedFilters.usage_min !== undefined) searchFilters.usage_min = validatedFilters.usage_min
+    searchFilters.sort_by = validatedFilters.sort_by as any
+    searchFilters.sort_order = validatedFilters.sort_order
+    searchFilters.limit = validatedFilters.limit
+    searchFilters.offset = validatedFilters.offset
 
     // Get components with search
-    const result = await componentDatabaseHelpers.components.search(validatedFilters)
+    const result = await componentDatabaseHelpers.components.search(searchFilters)
 
     if (!result.success) {
       return NextResponse.json(
@@ -204,7 +227,9 @@ export async function PUT(request: NextRequest) {
         operation,
         component_ids,
         data,
-        user_id: user.id,
+        options: {
+          user_id: user.id,
+        } as any,
       })
 
       if (!result.success) {
@@ -304,7 +329,9 @@ export async function DELETE(request: NextRequest) {
     const result = await componentDatabaseHelpers.components.bulkOperation({
       operation: 'delete',
       component_ids: body.component_ids,
-      user_id: user.id,
+      options: {
+        user_id: user.id,
+      } as any,
     })
 
     if (!result.success) {

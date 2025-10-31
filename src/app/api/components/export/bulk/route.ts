@@ -134,23 +134,23 @@ export async function POST(request: NextRequest) {
       format,
       user_id: user.id,
       options,
-      file_size: exportResult.data.file_size,
+      file_size: exportResult.data?.file_size || 0,
       export_duration: exportDuration,
       components_count: components.length,
     })
 
     // Return the exported file
-    return new NextResponse(exportResult.data.content, {
+    return new NextResponse(exportResult.data?.content || '', {
       status: 200,
       headers: {
-        'Content-Type': exportResult.data.content_type,
-        'Content-Disposition': `attachment; filename="${exportResult.data.filename}"`,
-        'Content-Length': exportResult.data.file_size.toString(),
+        'Content-Type': exportResult.data?.content_type || 'application/octet-stream',
+        'Content-Disposition': `attachment; filename="${exportResult.data?.filename || 'export'}"`,
+        'Content-Length': (exportResult.data?.file_size || 0).toString(),
         'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
         'X-Export-Success': 'true',
         'X-Export-Format': format,
-        'X-Export-Size': exportResult.data.file_size.toString(),
-        'X-Export-Duration': exportResult.data.export_duration.toString(),
+        'X-Export-Size': (exportResult.data?.file_size || 0).toString(),
+        'X-Export-Duration': exportDuration.toString(),
         'X-Export-Count': components.length.toString(),
         'X-Export-Type': 'bulk',
       },
@@ -193,7 +193,7 @@ async function fetchComponentsForBulkExport(supabase: any, componentIds: string[
         component_categories(name, slug, color, icon)
       `)
       .in('id', componentIds)
-      .or(`is_public.eq.true,author_id.eq.${supabase.auth.getUser().then(r => r.data.user?.id)}`)
+      .or(`is_public.eq.true,author_id.eq.${supabase.auth.getUser().then((r: any) => r.data.user?.id)}`)
 
     if (componentsError) {
       throw componentsError
@@ -252,7 +252,7 @@ async function fetchComponentsForBulkExport(supabase: any, componentIds: string[
     const usageStatsByComponent = groupDataByComponent(usageStats)
 
     // Enhance components with related data
-    const enhancedComponents = components.map(component => ({
+    const enhancedComponents = components.map((component: any) => ({
       ...component,
       variants: variantsByComponent.get(component.id) || [],
       dependencies: dependenciesByComponent.get(component.id) || [],

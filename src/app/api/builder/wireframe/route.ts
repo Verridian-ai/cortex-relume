@@ -102,10 +102,11 @@ export async function POST(request: NextRequest) {
       totalPages: sitemapData.pages.length,
       maxDepth: calculateMaxDepth(sitemapData.pages),
       pageTypes: getPageTypes(sitemapData.pages),
+      layoutPatterns: [], // TODO: Extract layout patterns from sitemap data
     }
     
     // Generate options for the wireframe generator
-    const generationOptions = {
+    const baseOptions = {
       includeNavigation: options?.includeNavigation ?? true,
       includeFooter: options?.includeFooter ?? true,
       includeSidebar: options?.includeSidebar,
@@ -116,6 +117,11 @@ export async function POST(request: NextRequest) {
       colorScheme: options?.colorScheme,
       accessibilityLevel: options?.accessibilityLevel || 'AA',
     }
+    
+    // Filter out undefined values to satisfy exactOptionalPropertyTypes
+    const generationOptions = Object.fromEntries(
+      Object.entries(baseOptions).filter(([_, v]) => v !== undefined)
+    )
     
     // Cost estimation
     const inputString = JSON.stringify({ sitemapData, options })

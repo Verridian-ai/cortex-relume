@@ -232,7 +232,7 @@ async function handleBulkExport(request: NextRequest, data: any, userId: string)
     }
 
     // Additional processing based on format
-    let finalContent = exportResult.data
+    let finalContent: any = exportResult.data
     let contentType = 'application/zip'
     let filename = `components-export-${Date.now()}.zip`
 
@@ -358,8 +358,8 @@ async function exportAsJSON(component: any, options: any, metadata: any) {
 // Export as React component
 async function exportAsReact(component: any, options: any, metadata: any) {
   // Use the existing React exporter if available
-  if (componentExportHelpers?.react) {
-    return await componentExportHelpers.react.exportComponent(component, options)
+  if ((componentExportHelpers as any)?.react) {
+    return await (componentExportHelpers as any).react.exportComponent(component, options)
   }
 
   // Fallback to basic React export

@@ -267,9 +267,9 @@ async function getUsageStatistics(params: any) {
       if (!componentStats[componentId]) {
         componentStats[componentId] = {
           id: componentId,
-          name: stat.components?.name || '',
-          category: stat.components?.category || '',
-          framework: stat.components?.framework || '',
+          name: stat.components?.[0]?.name || '',
+          category: stat.components?.[0]?.category || '',
+          framework: stat.components?.[0]?.framework || '',
           total_uses: 0,
           unique_users: 0,
           avg_rating: 0,

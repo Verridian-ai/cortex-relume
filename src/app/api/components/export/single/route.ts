@@ -98,24 +98,26 @@ export async function POST(request: NextRequest) {
 
     // Get additional data if needed
     const [variantsResult, dependenciesResult] = await Promise.all([
-      options.include_variants 
+      (options as any).include_variants 
         ? componentDatabaseHelpers.variants.getByComponentId(component_id)
         : Promise.resolve({ success: true, data: [] }),
-      options.include_dependencies
+      (options as any).include_dependencies
         ? componentDatabaseHelpers.dependencies.getByComponentId(component_id)
         : Promise.resolve({ success: true, data: [] }),
     ])
 
     // Perform the export based on format
-    const exportResult = await performSingleComponentExport({
+    const exportParams = {
       component,
       variants: variantsResult.success ? variantsResult.data : [],
       dependencies: dependenciesResult.success ? dependenciesResult.data : [],
       format,
       options,
       metadata,
-      userId: user?.id,
-    })
+      ...(user?.id ? { userId: user.id } : {}),
+    }
+
+    const exportResult = await performSingleComponentExport(exportParams)
 
     if (!exportResult.success) {
       return NextResponse.json(
@@ -130,22 +132,22 @@ export async function POST(request: NextRequest) {
       format,
       user_id: user?.id,
       options,
-      file_size: exportResult.data.file_size,
-      export_duration: exportResult.data.export_duration,
+      file_size: exportResult.data?.file_size || 0,
+      export_duration: exportResult.data?.export_duration || 0,
     })
 
     // Return the exported file
-    return new NextResponse(exportResult.data.content, {
+    return new NextResponse(exportResult.data?.content || '', {
       status: 200,
       headers: {
-        'Content-Type': exportResult.data.content_type,
-        'Content-Disposition': `attachment; filename="${exportResult.data.filename}"`,
-        'Content-Length': exportResult.data.file_size.toString(),
+        'Content-Type': exportResult.data?.content_type || 'application/octet-stream',
+        'Content-Disposition': `attachment; filename="${exportResult.data?.filename || 'export'}"`,
+        'Content-Length': (exportResult.data?.file_size || 0).toString(),
         'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
         'X-Export-Success': 'true',
         'X-Export-Format': format,
-        'X-Export-Size': exportResult.data.file_size.toString(),
-        'X-Export-Duration': exportResult.data.export_duration.toString(),
+        'X-Export-Size': (exportResult.data?.file_size || 0).toString(),
+        'X-Export-Duration': (exportResult.data?.export_duration || 0).toString(),
       },
     })
 

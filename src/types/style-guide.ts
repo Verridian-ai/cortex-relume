@@ -243,6 +243,11 @@ export interface StyleGuide {
 }
 
 export interface StyleGenerationRequest {
+  wireframeData: {
+    components: any[];
+    colorScheme?: string;
+    typography?: string;
+  };
   brandGuidelines: BrandGuidelines;
   designStyle: DesignStyle;
   wireframeDescription?: string;

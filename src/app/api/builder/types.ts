@@ -494,36 +494,7 @@ export interface ApiConfig {
 // Export all types
 // =============================================================================
 
-export type {
-  // Response types
-  ApiResponse,
-  PaginationInfo,
-  
-  // Request/Response types
-  SitemapGenerationRequest,
-  SitemapGenerationResponse,
-  WireframeGenerationRequest,
-  WireframeGenerationResponse,
-  StyleGuideGenerationRequest,
-  StyleGuideGenerationResponse,
-  ProjectCreationRequest,
-  ProjectUpdateRequest,
-  ProjectResponse,
-  ProjectListResponse,
-  ProjectWithStats,
-  
-  // Utility types
-  RateLimitInfo,
-  ErrorResponse,
-  RequestMetadata,
-  ApiClientOptions,
-  ApiClient,
-  UseSitemapGenerationOptions,
-  UseWireframeGenerationOptions,
-  UseStyleGuideGenerationOptions,
-  UseProjectOptions,
-  ApiConfig
-}
+
 
 // Default export for convenience
 export default {}

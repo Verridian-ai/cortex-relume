@@ -489,7 +489,7 @@ export async function GET(request: NextRequest) {
 
 // Calculate popular formats based on platform statistics
 function calculatePopularFormats(exportFormats: any, frameworks: string[], categories: string[]) {
-  const popular = []
+  const popular: any[] = []
 
   // Check single component formats
   exportFormats.single_component.formats.forEach((format: any) => {

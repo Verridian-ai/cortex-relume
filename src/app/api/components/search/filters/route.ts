@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
         title: 'Frameworks',
         type: 'multi-select',
         options: frameworks,
-        total_count: frameworks.reduce((sum, fw) => sum + fw.count, 0),
+        total_count: frameworks.reduce((sum: number, fw: any) => sum + fw.count, 0),
       },
 
       tags: {
@@ -244,7 +244,7 @@ function processFrameworks(components: any[]) {
       color: frameworkMeta[framework]?.color || '#6B7280',
       icon: frameworkMeta[framework]?.icon || '🔧',
     }))
-    .sort((a, b) => b.count - a.count)
+    .sort((a: any, b: any) => b.count - a.count)
 }
 
 // Process difficulty levels from complexity scores

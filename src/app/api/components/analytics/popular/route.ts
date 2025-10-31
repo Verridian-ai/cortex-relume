@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
         query = query.order('usage_count', { ascending: false })
         break
       case 'rating':
-        query = query.order('rating', { ascending: false, nullsLast: true })
+        query = query.order('rating', { ascending: false, nullsFirst: false })
         break
       case 'recent':
         query = query.order('updated_at', { ascending: false })
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     // Enhance components with usage data for the specified timeframe
     const enhancedComponents = components?.map(component => {
       const recentStats = component.component_usage_stats?.filter(
-        stat => stat.date >= startDate
+        stat => startDate && stat.date >= startDate
       ) || []
 
       const totalRecentUses = recentStats.reduce((sum, stat) => sum + (stat.total_uses || 0), 0)

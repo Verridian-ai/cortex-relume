@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
     // Calculate date range
     const days = getTimeframeDays(validatedParams.timeframe)
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
-      .toISOString().split('T')[0]
-    const endDate = new Date().toISOString().split('T')[0]
+      .toISOString().split('T')[0] || new Date(Date.now() - days * 24 * 60 * 60 * 1000).toLocaleDateString('en-CA')
+    const endDate = new Date().toISOString().split('T')[0] || new Date().toLocaleDateString('en-CA')
 
     let usageData
 
@@ -185,10 +185,10 @@ async function getAggregatedUsage(supabase: any, startDate: string, endDate: str
     }
 
     // Calculate category and framework breakdowns
-    const categoryBreakdown = {}
-    const frameworkBreakdown = {}
+    const categoryBreakdown: Record<string, any> = {}
+    const frameworkBreakdown: Record<string, any> = {}
 
-    stats?.forEach(stat => {
+    stats?.forEach((stat: any) => {
       const component = stat.components
       if (component) {
         // Category breakdown
@@ -262,7 +262,7 @@ function groupDataByGranularity(stats: any[], granularity: string) {
       case 'weekly':
         const weekStart = new Date(date)
         weekStart.setDate(date.getDate() - date.getDay())
-        key = weekStart.toISOString().split('T')[0]
+        key = weekStart.toISOString().split('T')[0] || weekStart.toLocaleDateString('en-CA')
         break
       case 'monthly':
         key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
@@ -370,8 +370,8 @@ function calculateUsageInsights(stats: any[]) {
 async function getPreviousPeriodUsage(supabase: any, componentId: string, currentStart: string, currentEnd: string) {
   try {
     const currentDays = Math.ceil((new Date(currentEnd).getTime() - new Date(currentStart).getTime()) / (1000 * 60 * 60 * 24))
-    const previousEnd = new Date(new Date(currentStart).getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    const previousStart = new Date(new Date(previousEnd).getTime() - currentDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    const previousEnd = new Date(new Date(currentStart).getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0] || new Date(new Date(currentStart).getTime() - 24 * 60 * 60 * 1000).toLocaleDateString('en-CA')
+    const previousStart = new Date(new Date(previousEnd).getTime() - currentDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0] || new Date(new Date(previousEnd).getTime() - currentDays * 24 * 60 * 60 * 1000).toLocaleDateString('en-CA')
 
     const { data: previousStats } = await supabase
       .from('component_usage_stats')
@@ -380,14 +380,14 @@ async function getPreviousPeriodUsage(supabase: any, componentId: string, curren
       .gte('date', previousStart)
       .lte('date', previousEnd)
 
-    const previousUsage = previousStats?.reduce((sum, stat) => sum + (stat.total_uses || 0), 0) || 0
+    const previousUsage = previousStats?.reduce((sum: number, stat: any) => sum + (stat.total_uses || 0), 0) || 0
     const currentUsage = await supabase
       .from('component_usage_stats')
       .select('total_uses')
       .eq('component_id', componentId)
       .gte('date', currentStart)
       .lte('date', currentEnd)
-      .then(result => result.data?.reduce((sum, stat) => sum + (stat.total_uses || 0), 0) || 0)
+      .then((result: any) => result.data?.reduce((sum: number, stat: any) => sum + (stat.total_uses || 0), 0) || 0)
 
     const change = previousUsage > 0 ? ((currentUsage - previousUsage) / previousUsage) * 100 : 
                   currentUsage > 0 ? 100 : 0

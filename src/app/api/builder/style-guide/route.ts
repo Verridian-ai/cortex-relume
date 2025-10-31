@@ -108,8 +108,14 @@ export async function POST(request: NextRequest) {
     const estimatedCost = costOptimization.estimateCost(estimatedTokens, 3000)
     
     // Generate style guide using the AI generator
+    const filteredWireframeData = {
+      components: wireframeData.components,
+      ...(wireframeData.colorScheme ? { colorScheme: wireframeData.colorScheme } : {}),
+      ...(wireframeData.typography ? { typography: wireframeData.typography } : {})
+    }
+    
     const styleResult = await styleGenerator.generateStyleGuide({
-      wireframeData,
+      wireframeData: filteredWireframeData,
       brandGuidelines: {
         name: brandGuidelines.name,
         industry: brandGuidelines.industry,
@@ -138,15 +144,16 @@ export async function POST(request: NextRequest) {
     }
     
     // Add metadata to the result
+    const styleGuide = styleResult.styleGuide || null
     const result = {
-      styleGuide: styleResult.styleGuide,
+      styleGuide,
       warnings: styleResult.warnings || [],
       metadata: {
         processingTime,
         tokensUsed: estimatedTokens,
         cost: estimatedCost,
-        components: styleResult.styleGuide.componentStyles ? Object.keys(styleResult.styleGuide.componentStyles).length : 0,
-        brandAlignment: calculateBrandAlignment(brandGuidelines, styleResult.styleGuide),
+        components: styleGuide?.componentStyles ? Object.keys(styleGuide.componentStyles).length : 0,
+        brandAlignment: styleGuide ? calculateBrandAlignment(brandGuidelines, styleGuide) : 0,
       }
     }
     
@@ -309,11 +316,11 @@ function calculateBrandAlignment(brandGuidelines: any, styleGuide: any): number 
   // Check typography preference alignment
   if (brandGuidelines.typographyPreference) {
     const preference = brandGuidelines.typographyPreference
-    const fontFamilies = Object.values(styleGuide.typography.fontFamily).flat()
+    const fontFamilies = Object.values(styleGuide.typography.fontFamily).flat() as string[]
     
-    if (preference === 'sans-serif' && fontFamilies.some(f => f.includes('sans'))) {
+    if (preference === 'sans-serif' && fontFamilies.some((f: string) => f.includes('sans'))) {
       alignmentScore += 15
-    } else if (preference === 'serif' && fontFamilies.some(f => f.includes('serif'))) {
+    } else if (preference === 'serif' && fontFamilies.some((f: string) => f.includes('serif'))) {
       alignmentScore += 15
     }
   }
@@ -332,7 +339,7 @@ function calculateBrandAlignment(brandGuidelines: any, styleGuide: any): number 
   } else if (personality.includes('creative') || personality.includes('playful')) {
     alignmentScore += styleGuide.borderRadius.lg !== '0.5rem' ? 10 : 0
   } else if (personality.includes('luxury') || personality.includes('premium')) {
-    alignmentScore += Object.values(styleGuide.shadows).some(shadow => shadow.includes('xl')) ? 10 : 0
+    alignmentScore += (Object.values(styleGuide.shadows) as string[]).some((shadow: string) => shadow.includes('xl')) ? 10 : 0
   }
   
   return Math.min(100, Math.max(0, alignmentScore))
@@ -346,7 +353,7 @@ export function generateCSSVariables(styleGuide: any): Record<string, string> {
   
   // Colors
   Object.entries(styleGuide.colorPalette).forEach(([category, colors]) => {
-    if (typeof colors === 'object' && '50' in colors) {
+    if (colors && typeof colors === 'object' && '50' in colors) {
       Object.entries(colors as any).forEach(([shade, color]) => {
         cssVars[`--color-${category}-${shade}`] = color as string
       })
@@ -357,26 +364,26 @@ export function generateCSSVariables(styleGuide: any): Record<string, string> {
   
   // Typography
   Object.entries(styleGuide.typography.fontSize).forEach(([size, value]) => {
-    cssVars[`--font-size-${size}`] = value
+    cssVars[`--font-size-${size}`] = value as string
   })
   
   Object.entries(styleGuide.typography.fontWeight).forEach(([weight, value]) => {
-    cssVars[`--font-weight-${weight}`] = value.toString()
+    cssVars[`--font-weight-${weight}`] = (value as number).toString()
   })
   
   // Spacing
   Object.entries(styleGuide.spacing.scale).forEach(([key, value]) => {
-    cssVars[`--spacing-${key}`] = value
+    cssVars[`--spacing-${key}`] = value as string
   })
   
   // Border radius
   Object.entries(styleGuide.borderRadius).forEach(([key, value]) => {
-    cssVars[`--radius-${key}`] = value
+    cssVars[`--radius-${key}`] = value as string
   })
   
   // Shadows
   Object.entries(styleGuide.shadows).forEach(([key, value]) => {
-    cssVars[`--shadow-${key}`] = value
+    cssVars[`--shadow-${key}`] = value as string
   })
   
   return cssVars
