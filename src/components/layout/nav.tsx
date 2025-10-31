@@ -18,7 +18,13 @@ import {
   LogOut,
   User,
   Zap,
-  Crown
+  Crown,
+  Puzzle,
+  Search,
+  Grid3X3,
+  Package,
+  ExternalLink,
+  ChevronDown
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -28,6 +34,8 @@ interface NavProps {
 
 export function Nav({ isAppLayout = false }: NavProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isComponentsDropdownOpen, setIsComponentsDropdownOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const { user, signOut } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
@@ -36,6 +44,39 @@ export function Nav({ isAppLayout = false }: NavProps) {
     await signOut()
     router.push('/')
   }
+
+  const componentCategories = [
+    {
+      name: 'Layout Components',
+      description: 'Headers, footers, containers',
+      href: '/app/components/browse?category=layout',
+      icon: Layout
+    },
+    {
+      name: 'Navigation',
+      description: 'Menus, navbars, breadcrumbs',
+      href: '/app/components/browse?category=navigation',
+      icon: Grid3X3
+    },
+    {
+      name: 'Forms',
+      description: 'Inputs, buttons, form sections',
+      href: '/app/components/browse?category=forms',
+      icon: Package
+    },
+    {
+      name: 'Interactive',
+      description: 'Modals, dropdowns, tabs',
+      href: '/app/components/browse?category=interactive',
+      icon: Puzzle
+    },
+    {
+      name: 'Content',
+      description: 'Cards, galleries, articles',
+      href: '/app/components/browse?category=content',
+      icon: FolderOpen
+    }
+  ]
 
   const navigation = [
     {
@@ -55,6 +96,14 @@ export function Nav({ isAppLayout = false }: NavProps) {
       href: '/app/builder',
       icon: Zap,
       public: false
+    },
+    {
+      name: 'Components',
+      href: '/app/components',
+      icon: Puzzle,
+      public: false,
+      hasDropdown: true,
+      dropdownItems: componentCategories
     },
     {
       name: 'Projects',
@@ -94,21 +143,88 @@ export function Nav({ isAppLayout = false }: NavProps) {
           <div className="hidden md:flex items-center space-x-1">
             {filteredNavigation.slice(1).map((item) => {
               const Icon = item.icon
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href || (item.href !== '/app/components' && pathname.startsWith(item.href))
+              const hasDropdown = item.hasDropdown
+              
               return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={cn(
-                    'flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                    isActive 
-                      ? 'bg-brand-500/10 text-brand-500' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                <div key={item.name} className="relative">
+                  {hasDropdown ? (
+                    <div 
+                      className="relative"
+                      onMouseEnter={() => setIsComponentsDropdownOpen(true)}
+                      onMouseLeave={() => setIsComponentsDropdownOpen(false)}
+                    >
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          'flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                          pathname.startsWith('/app/components')
+                            ? 'bg-brand-500/10 text-brand-500' 
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Link>
+                      
+                      {/* Components Dropdown */}
+                      {isComponentsDropdownOpen && (
+                        <div className="absolute top-full left-0 mt-1 w-80 bg-background border border-border rounded-lg shadow-lg z-50 p-2">
+                          <div className="mb-3">
+                            <div className="flex items-center space-x-2 px-3 py-2">
+                              <Search className="h-4 w-4 text-muted-foreground" />
+                              <input
+                                type="text"
+                                placeholder="Search components..."
+                                className="flex-1 text-sm bg-transparent border-none outline-none placeholder:text-muted-foreground"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            {componentCategories.map((category) => {
+                              const CategoryIcon = category.icon
+                              return (
+                                <Link
+                                  key={category.name}
+                                  href={category.href}
+                                  className="flex items-start space-x-3 p-3 rounded-lg hover:bg-muted transition-colors"
+                                >
+                                  <CategoryIcon className="h-5 w-5 text-brand-500 mt-0.5" />
+                                  <div>
+                                    <div className="text-sm font-medium">{category.name}</div>
+                                    <div className="text-xs text-muted-foreground">{category.description}</div>
+                                  </div>
+                                </Link>
+                              )
+                            })}
+                          </div>
+                          <div className="border-t border-border mt-2 pt-2">
+                            <Link
+                              href="/app/components/browse"
+                              className="flex items-center justify-center space-x-2 p-2 text-sm text-brand-500 hover:bg-brand-500/5 rounded-lg transition-colors"
+                            >
+                              <span>Browse All Components</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        'flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                        isActive 
+                          ? 'bg-brand-500/10 text-brand-500' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.name}</span>
+                    </Link>
                   )}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </Link>
+                </div>
               )
             })}
           </div>
@@ -129,8 +245,30 @@ export function Nav({ isAppLayout = false }: NavProps) {
                     <span className="hidden sm:inline text-sm font-medium">
                       {user.email?.split('@')[0]}
                     </span>
+                    <ChevronDown className="h-3 w-3 hidden sm:inline" />
                   </Button>
-                  {/* Dropdown would go here - simplified for now */}
+                  {/* User Dropdown */}
+                  <div className="absolute top-full right-0 mt-1 w-48 bg-background border border-border rounded-lg shadow-lg z-50 p-2">
+                    <div className="px-3 py-2 text-sm text-muted-foreground border-b border-border">
+                      {user.email}
+                    </div>
+                    <Link
+                      href="/app/settings"
+                      className="flex items-center space-x-2 p-2 text-sm hover:bg-muted rounded-lg transition-colors"
+                    >
+                      <Settings className="h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={handleSignOut}
+                      className="w-full justify-start px-2 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </div>
                 </div>
                 <Button 
                   variant="ghost" 
@@ -159,24 +297,70 @@ export function Nav({ isAppLayout = false }: NavProps) {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t bg-background/95 backdrop-blur">
             <div className="container py-4 space-y-2">
+              {/* Components Search in Mobile */}
+              <div className="px-4 mb-4">
+                <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-lg">
+                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search components..."
+                    className="flex-1 text-sm bg-transparent border-none outline-none placeholder:text-muted-foreground"
+                  />
+                </div>
+              </div>
+              
               {filteredNavigation.slice(1).map((item) => {
                 const Icon = item.icon
-                const isActive = pathname === item.href
+                const isActive = pathname === item.href || (item.href !== '/app/components' && pathname.startsWith(item.href))
+                const hasDropdown = item.hasDropdown
+                
                 return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={cn(
-                      'flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors',
-                      isActive 
-                        ? 'bg-brand-500/10 text-brand-500' 
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  <div key={item.name}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        'flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors',
+                        pathname.startsWith('/app/components')
+                          ? 'bg-brand-500/10 text-brand-500' 
+                          : isActive 
+                            ? 'bg-brand-500/10 text-brand-500' 
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      )}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <span>{item.name}</span>
+                      {hasDropdown && <ChevronDown className="h-3 w-3 ml-auto" />}
+                    </Link>
+                    
+                    {/* Mobile Components Submenu */}
+                    {hasDropdown && (
+                      <div className="pl-8 space-y-1">
+                        {componentCategories.map((category) => {
+                          const CategoryIcon = category.icon
+                          return (
+                            <Link
+                              key={category.name}
+                              href={category.href}
+                              className="flex items-center space-x-3 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              <CategoryIcon className="h-4 w-4" />
+                              <span>{category.name}</span>
+                            </Link>
+                          )
+                        })}
+                        <Link
+                          href="/app/components/browse"
+                          className="flex items-center space-x-3 px-3 py-2 text-sm text-brand-500 hover:bg-brand-500/5 rounded-lg transition-colors"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          <span>Browse All Components</span>
+                        </Link>
+                      </div>
                     )}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span>{item.name}</span>
-                  </Link>
+                  </div>
                 )
               })}
               <div className="pt-2 border-t">
