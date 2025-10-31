@@ -438,6 +438,125 @@ export interface Database {
           }
         ]
       }
+      builder_sessions: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          user_id: string
+          project_id: string | null
+          session_token: string
+          status: string
+          current_step: string
+          step_data: Record<string, any> | null
+          progress: Record<string, any> | null
+          metadata: Record<string, any> | null
+          started_at: string
+          ended_at: string | null
+          duration: number | null
+          ip_address: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          user_id: string
+          project_id?: string | null
+          session_token: string
+          status?: string
+          current_step?: string
+          step_data?: Record<string, any> | null
+          progress?: Record<string, any> | null
+          metadata?: Record<string, any> | null
+          started_at?: string
+          ended_at?: string | null
+          duration?: number | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+          project_id?: string | null
+          session_token?: string
+          status?: string
+          current_step?: string
+          step_data?: Record<string, any> | null
+          progress?: Record<string, any> | null
+          metadata?: Record<string, any> | null
+          started_at?: string
+          ended_at?: string | null
+          duration?: number | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "builder_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "builder_sessions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      version_history: {
+        Row: {
+          id: string
+          created_at: string
+          entity_type: string
+          entity_id: string
+          version_number: number
+          user_id: string
+          changes: Record<string, any> | null
+          data: Record<string, any> | null
+          message: string | null
+          is_major: boolean
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          entity_type: string
+          entity_id: string
+          version_number: number
+          user_id: string
+          changes?: Record<string, any> | null
+          data?: Record<string, any> | null
+          message?: string | null
+          is_major?: boolean
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          entity_type?: string
+          entity_id?: string
+          version_number?: number
+          user_id?: string
+          changes?: Record<string, any> | null
+          data?: Record<string, any> | null
+          message?: string | null
+          is_major?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "version_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

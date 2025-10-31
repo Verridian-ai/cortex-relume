@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { useAuth } from '@/components/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Nav } from '@/components/layout/nav'
 import { 
   Zap, 
   Target, 
@@ -14,45 +16,19 @@ import {
   Users,
   Bot,
   CheckCircle,
-  Play
+  Play,
+  FolderOpen,
+  Calendar,
+  TrendingUp
 } from 'lucide-react'
 
 export default function HomePage() {
+  const { user } = useAuth()
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Bot className="h-8 w-8 text-brand-500" />
-            <span className="text-xl font-bold gradient-text">Cortex Relume</span>
-            <Badge variant="secondary" className="ml-2">
-              <Sparkles className="h-3 w-3 mr-1" />
-              GPT-5 Powered
-            </Badge>
-          </div>
-          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-            <Link href="#features" className="transition-colors hover:text-brand-500">
-              Features
-            </Link>
-            <Link href="#components" className="transition-colors hover:text-brand-500">
-              Components
-            </Link>
-            <Link href="#pricing" className="transition-colors hover:text-brand-500">
-              Pricing
-            </Link>
-            <Link href="/auth/signin" className="transition-colors hover:text-brand-500">
-              Sign In
-            </Link>
-          </nav>
-          <Button asChild>
-            <Link href="/app/dashboard">
-              Get Started
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </header>
+      <Nav />
 
       {/* Hero Section */}
       <section className="py-20 md:py-32 relative overflow-hidden">
@@ -72,14 +48,14 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button size="lg" asChild className="animate-fade-in">
-              <Link href="/app/dashboard">
-                Start Building for Free
+              <Link href={user ? "/app/dashboard" : "/app/builder"}>
+                {user ? "Go to Dashboard" : "Start Building for Free"}
                 <Zap className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="animate-fade-in">
-              <Link href="/demo">
-                Watch Demo
+              <Link href="#features">
+                Explore Features
                 <Play className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -113,14 +89,16 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="card-hover">
-              <CardHeader>
-                <Target className="h-10 w-10 text-brand-500 mb-2" />
-                <CardTitle>AI Site Builder</CardTitle>
-                <CardDescription>
-                  Generate sitemaps and wireframes from simple prompts using GPT-5's advanced reasoning capabilities.
-                </CardDescription>
-              </CardHeader>
+            <Card className="card-hover cursor-pointer" asChild>
+              <Link href={user ? "/app/builder" : "/app/builder"}>
+                <CardHeader>
+                  <Target className="h-10 w-10 text-brand-500 mb-2" />
+                  <CardTitle>AI Site Builder</CardTitle>
+                  <CardDescription>
+                    Generate sitemaps and wireframes from simple prompts using GPT-5's advanced reasoning capabilities.
+                  </CardDescription>
+                </CardHeader>
+              </Link>
             </Card>
             
             <Card className="card-hover">
@@ -188,8 +166,8 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
-                <Link href="/app/dashboard">
-                  Start Free Trial
+                <Link href={user ? "/app/dashboard" : "/app/builder"}>
+                  {user ? "Continue Building" : "Start Free Trial"}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -220,9 +198,9 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="#features" className="hover:text-brand-500">Features</Link></li>
-                <li><Link href="#components" className="hover:text-brand-500">Components</Link></li>
+                <li><Link href="/app/builder" className="hover:text-brand-500">AI Builder</Link></li>
+                <li><Link href="/app/dashboard" className="hover:text-brand-500">Dashboard</Link></li>
                 <li><Link href="/pricing" className="hover:text-brand-500">Pricing</Link></li>
-                <li><Link href="/templates" className="hover:text-brand-500">Templates</Link></li>
               </ul>
             </div>
             <div>

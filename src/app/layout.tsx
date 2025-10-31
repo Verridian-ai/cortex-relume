@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/components/auth-provider'
 import { QueryProvider } from '@/components/query-provider'
 import { AuthGuard } from '@/components/auth-guard'
+import { usePathname } from 'next/navigation'
 
 const fontSans = Inter({
   subsets: ['latin'],
@@ -126,9 +127,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <AuthProvider>
               <div className="relative flex min-h-screen flex-col">
                 <div className="flex-1">
-                  <AuthGuard>
-                    {children}
-                  </AuthGuard>
+                  {children}
                 </div>
                 <Toaster 
                   position="top-right"

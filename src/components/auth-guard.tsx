@@ -25,8 +25,6 @@ export function AuthGuard({
     if (!loading) {
       if (requireAuth && !user) {
         router.push(redirectTo)
-      } else if (!requireAuth && user) {
-        router.push('/app/dashboard')
       }
     }
   }, [user, loading, requireAuth, redirectTo, router])
@@ -44,10 +42,6 @@ export function AuthGuard({
 
   // Don't render children if redirecting
   if (requireAuth && !user) {
-    return null
-  }
-  
-  if (!requireAuth && user) {
     return null
   }
 
